@@ -41,12 +41,12 @@ export function BookingProvider({ children }) {
   const [chatMessages, setChatMessages] = useState([
     {
       from: 'bot',
-      text: "Hi there! 👋 I'm LorryBot, your booking assistant.\n\nI can help you book a lorry, track deliveries, check pricing, or answer any questions!",
+      text: "Hi! 👋 I'm LorryBot — your logistics assistant.\n\nI can help you with pricing, cities, how the app works, and more.\n\nLogin to book and track your deliveries!",
       actions: [
-        { label: '🚛 Book a Lorry', page: 'booking' },
         { label: '💰 Pricing', trigger: 'pricing info' },
-        { label: '📋 My Bookings', page: 'myBookings' },
-        { label: '🆘 Help', trigger: 'contact support' },
+        { label: '🏙️ Cities', trigger: 'which cities are covered' },
+        { label: '🚛 How it Works', trigger: 'how does booking work' },
+        { label: '🔑 Login', page: 'login' },
       ],
     },
   ]);
@@ -123,7 +123,7 @@ export function BookingProvider({ children }) {
       setIsAuthenticated(true);
       setAuthLoading(false);
       showToast(`Welcome back, ${demoUser.name.split(' ')[0]}!`, 'success');
-      setPage(demoUser.role === 'driver' ? 'driver' : 'home');
+      setPage(demoUser.role === 'driver' ? 'driver' : demoUser.role === 'owner' ? 'home' : 'home');
       return { user: demoUser, token: 'mock-token' };
     }
     // Check locally signed-up users
@@ -138,7 +138,8 @@ export function BookingProvider({ children }) {
         setIsAuthenticated(true);
         setAuthLoading(false);
         showToast(`Welcome back, ${localUser.name.split(' ')[0]}!`, 'success');
-        setPage(localUser.role === 'driver' ? 'driver' : 'home');
+        const dest = localUser.role === 'driver' ? 'driver' : localUser.role === 'owner' ? 'home' : 'home';
+        setPage(dest);
         return { user: localUser, token: 'mock-token' };
       }
     }

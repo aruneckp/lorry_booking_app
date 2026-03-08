@@ -21,47 +21,33 @@ export default function MyBookingsPage() {
   const { setPage, userBookings } = useBooking();
   const [activeTab, setActiveTab] = useState('active');
 
+  const totalSpent = userBookings.filter(b => b.status === 'completed').reduce((s, b) => s + (b.fare || 0), 0);
+  const completedCount = userBookings.filter(b => b.status === 'completed').length;
+  const activeCount = userBookings.filter(b => ['pending', 'confirmed', 'in-transit'].includes(b.status)).length;
+  const cancelledCount = userBookings.filter(b => b.status === 'cancelled').length;
+
   const filteredBookings = userBookings.filter((b) => {
     if (activeTab === 'active') return ['pending', 'confirmed', 'in-transit'].includes(b.status);
     return b.status === activeTab;
   });
 
   return (
-    <div className="page-container">
-      <div className="bookings-page">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+    <div className="mb-shell">
+      {/* ── Left: bookings list ── */}
+      <div className="mb-left">
+        <div className="mb-header">
           <h1>📋 My Bookings</h1>
-          <button className="btn btn-primary" onClick={() => setPage('booking')}>
-            + New Booking
-          </button>
+          <button className="btn btn-primary" onClick={() => setPage('booking')}>+ New Booking</button>
         </div>
 
-        {/* Stats bar */}
-        <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          {[
-            { label: 'Total', count: userBookings.length, color: 'var(--primary)' },
-            { label: 'Active', count: userBookings.filter(b => ['pending','confirmed','in-transit'].includes(b.status)).length, color: '#f59e0b' },
-            { label: 'Completed', count: userBookings.filter(b => b.status === 'completed').length, color: '#10b981' },
-          ].map((s) => (
-            <div key={s.label} style={{ background: 'white', borderRadius: '8px', padding: '12px 20px', boxShadow: 'var(--shadow)', minWidth: '100px', textAlign: 'center' }}>
-              <div style={{ fontSize: '22px', fontWeight: 700, color: s.color }}>{s.count}</div>
-              <div style={{ fontSize: '12px', color: 'var(--text-light)' }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="booking-tabs">
+        <div className="booking-tabs" style={{ marginBottom: '20px' }}>
           {['active', 'completed', 'cancelled'].map((tab) => (
-            <button
-              key={tab}
-              className={`booking-tab ${activeTab === tab ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
+            <button key={tab}
+              className={`booking-tab${activeTab === tab ? ' active' : ''}`}
+              onClick={() => setActiveTab(tab)}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              {tab === 'active' && userBookings.filter(b => ['pending','confirmed','in-transit'].includes(b.status)).length > 0 && (
-                <span style={{ marginLeft: '6px', background: 'var(--primary)', color: 'white', borderRadius: '10px', padding: '1px 7px', fontSize: '11px' }}>
-                  {userBookings.filter(b => ['pending','confirmed','in-transit'].includes(b.status)).length}
-                </span>
+              {tab === 'active' && activeCount > 0 && (
+                <span className="tab-badge">{activeCount}</span>
               )}
             </button>
           ))}
@@ -78,15 +64,13 @@ export default function MyBookingsPage() {
                   </span>
                 </div>
 
+                <div className="bk-route-line">
+                  <span>{booking.from}</span>
+                  <span className="bk-route-arrow">→</span>
+                  <span>{booking.to}</span>
+                </div>
+
                 <div className="booking-details">
-                  <div className="detail-row">
-                    <span className="detail-label">📍 From</span>
-                    <span>{booking.from}</span>
-                  </div>
-                  <div className="detail-row">
-                    <span className="detail-label">📍 To</span>
-                    <span>{booking.to}</span>
-                  </div>
                   {booking.distance && (
                     <div className="detail-row">
                       <span className="detail-label">📏 Distance</span>
@@ -138,16 +122,62 @@ export default function MyBookingsPage() {
           <div className="empty-state">
             <div className="empty-state-icon">📦</div>
             <h3>No {activeTab} bookings</h3>
-            <p>
-              {activeTab === 'active'
-                ? 'You have no active bookings. Create one now!'
-                : 'No bookings in this category yet.'}
-            </p>
-            <button className="btn btn-primary" onClick={() => setPage('booking')} style={{ marginTop: '16px' }}>
-              Book Now
-            </button>
+            <p>{activeTab === 'active' ? 'You have no active bookings. Create one now!' : 'No bookings in this category yet.'}</p>
+            <button className="btn btn-primary" onClick={() => setPage('booking')} style={{ marginTop: '16px' }}>Book Now</button>
           </div>
         )}
+      </div>
+
+      {/* ── Right: stats sidebar ── */}
+      <div className="mb-right">
+        {/* Stats */}
+        <div className="mb-stats-card">
+          <div className="mb-stats-title">Overview</div>
+          <div className="mb-stats-grid">
+            {[
+              { label: 'Total', value: userBookings.length, color: 'var(--primary)', icon: '📋' },
+              { label: 'Active', value: activeCount, color: '#F59E0B', icon: '🚦' },
+              { label: 'Completed', value: completedCount, color: '#10B981', icon: '✓' },
+              { label: 'Cancelled', value: cancelledCount, color: '#EF4444', icon: '✕' },
+            ].map(s => (
+              <div key={s.label} className="mb-stat-cell">
+                <div className="mb-stat-icon">{s.icon}</div>
+                <div className="mb-stat-val" style={{ color: s.color }}>{s.value}</div>
+                <div className="mb-stat-lbl">{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mb-spent-row">
+            <span>Total Spent</span>
+            <span className="mb-spent-val">₹{totalSpent.toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+
+        {/* Quick actions */}
+        <div className="mb-actions-card">
+          <div className="mb-stats-title">Quick Actions</div>
+          <button className="mb-action-btn" onClick={() => setPage('booking')}>🚛 Book a Lorry</button>
+          <button className="mb-action-btn" onClick={() => setPage('profile')}>👤 My Profile</button>
+          <button className="mb-action-btn">☎️ Call Support</button>
+          <button className="mb-action-btn">💬 Live Chat</button>
+        </div>
+
+        {/* Support card */}
+        <div className="mb-support-card">
+          <div style={{ fontSize: 28, marginBottom: 8 }}>🎧</div>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>Need Help?</div>
+          <div style={{ fontSize: 13, color: 'var(--text-light)', marginBottom: 12 }}>
+            Our support team is available 24/7 to assist you.
+          </div>
+          <button className="btn btn-outline btn-sm" style={{ width: '100%' }}>Contact Support</button>
+        </div>
+
+        {/* Trust */}
+        <div className="mb-trust-strip">
+          <div className="mb-trust-row"><span>✓</span> Secure &amp; encrypted</div>
+          <div className="mb-trust-row"><span>✓</span> Real-time tracking</div>
+          <div className="mb-trust-row"><span>✓</span> Instant notifications</div>
+        </div>
       </div>
     </div>
   );

@@ -11,9 +11,20 @@ import CheckoutPage from './pages/CheckoutPage';
 import MyBookingsPage from './pages/MyBookingsPage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPages from './pages/AuthPages';
+import OwnerApp from './pages/owner/OwnerApp';
 
 export default function BookingApp() {
   const { page, isAuthenticated, userType } = useBooking();
+
+  // Owner portal — full-screen, no consumer navbar/footer
+  if (isAuthenticated && userType === 'owner') {
+    return (
+      <>
+        <OwnerApp />
+        <Toast />
+      </>
+    );
+  }
 
   return (
     <div className="app-container">
@@ -33,7 +44,7 @@ export default function BookingApp() {
         )}
       </div>
 
-      {isAuthenticated && <Chatbot />}
+      <Chatbot />
       <Toast />
       <Footer />
     </div>

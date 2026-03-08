@@ -25,6 +25,16 @@ export const MOCK_USERS = [
     name: 'Suresh Kumar',
     email: 'suresh.kumar@email.com',
   },
+  {
+    id: 'U004',
+    phone: '9000000001',
+    password: 'owner123',
+    role: 'owner',
+    name: 'Arjun Mehta',
+    email: 'arjun.mehta@lorryhub.com',
+    company: 'LorryHub Transport Pvt. Ltd.',
+    gstNo: '29AAPFL1234Q1Z5',
+  },
 ];
 
 // ============ Sample Bookings per User ============

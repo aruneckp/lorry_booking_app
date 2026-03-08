@@ -103,6 +103,17 @@ export function getBotReply(text, context = {}) {
   // Greeting
   if (/^(hi|hello|hey|hii|good\s*(morning|afternoon|evening)|greetings)/i.test(text)) {
     const name = user?.name?.split(' ')[0] || 'there';
+    if (!user) {
+      return {
+        text: `Hello! 👋 I'm LorryBot, your logistics assistant.\n\nI can help you with:\n🚛 Lorry booking info\n💰 Pricing & routes\n🏙️ Cities we cover\n🆘 Support\n\nLogin to book and track your deliveries!`,
+        actions: [
+          { label: '💰 See Pricing', trigger: 'pricing info' },
+          { label: '🏙️ Cities Covered', trigger: 'which cities are covered' },
+          { label: '🔑 Login to Book', page: 'login' },
+          { label: '🆘 Help', trigger: 'contact support' },
+        ],
+      };
+    }
     return {
       text: `Hello ${name}! 👋 I'm LorryBot, your booking assistant.\n\nHow can I help you today?`,
       actions: [
@@ -145,6 +156,15 @@ export function getBotReply(text, context = {}) {
 
   // Book
   if (/book|order|need.*lorry|need.*truck|transport|send.*package|ship/i.test(text)) {
+    if (!user) {
+      return {
+        text: "To book a lorry:\n\n1️⃣ Enter pickup & dropoff city\n2️⃣ Select vehicle type\n3️⃣ Choose date & time\n4️⃣ Pay & confirm\n\n⏱ Average booking time: 2 minutes!\n\nPlease login to start booking.",
+        actions: [
+          { label: '🔑 Login to Book', page: 'login' },
+          { label: '💰 See Pricing', trigger: 'pricing info' },
+        ],
+      };
+    }
     return {
       text: "Let's get your shipment moving! 🚛\n\n1️⃣ Enter pickup & dropoff city\n2️⃣ Select vehicle type\n3️⃣ Choose date & time\n4️⃣ Pay & confirm\n\nAverage booking time: 2 minutes!",
       actions: [
@@ -244,6 +264,17 @@ export function getBotReply(text, context = {}) {
   }
 
   // Default
+  if (!user) {
+    return {
+      text: "I can help with:\n💰 Pricing & rates\n🏙️ Cities we cover\n🚛 How booking works\n⚖️ Vehicle capacities\n🆘 Support\n\nLogin to book and track your shipments!",
+      actions: [
+        { label: '💰 Pricing', trigger: 'pricing info' },
+        { label: '🏙️ Cities', trigger: 'which cities are covered' },
+        { label: '🔑 Login', page: 'login' },
+        { label: '🆘 Help', trigger: 'contact support' },
+      ],
+    };
+  }
   return {
     text: "I can help with:\n🚛 Booking a lorry\n💰 Pricing & routes\n📋 Your bookings\n🗺️ Live tracking\n🆘 Support\n\nWhat would you like to do?",
     actions: [
