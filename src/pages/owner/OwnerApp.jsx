@@ -7,6 +7,7 @@ import AvailabilityView from './AvailabilityView';
 import ItemsPolicy from './ItemsPolicy';
 import TransactionsPage from './TransactionsPage';
 import AllBookings from './AllBookings';
+import VehicleTracking from './VehicleTracking';
 
 export default function OwnerApp() {
   const [activePage, setActivePage] = useState('dashboard');
@@ -20,6 +21,7 @@ export default function OwnerApp() {
       case 'drivers':      return <DriverMaster />;
       case 'items':        return <ItemsPolicy />;
       case 'allbookings':  return <AllBookings />;
+      case 'tracking':     return <VehicleTracking />;
       default:             return <OwnerDashboard />;
     }
   };

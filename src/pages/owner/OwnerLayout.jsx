@@ -3,6 +3,7 @@ import { useBooking } from '../../context/BookingContext';
 
 const NAV_ITEMS = [
   { id: 'dashboard',     icon: '📊', label: 'Dashboard' },
+  { id: 'tracking',      icon: '🛰️', label: 'Live Tracking' },
   { id: 'transactions',  icon: '💰', label: 'Transactions' },
   { id: 'availability',  icon: '🗓️', label: 'Availability' },
   { id: 'vehicles',      icon: '🚛', label: 'Vehicle Master' },
